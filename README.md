@@ -133,6 +133,6 @@ reports/figures/best_model_test_pr_auc.png
 - Some endpoints remain hard; performance is influenced by class imbalance and label noise.
 ## License/ disclaimer
 
--This is a learning project; Tox21 is a public benchmark dataset; please follow the dataset’s original terms and citation recommendations when reusing it.
+- This is a learning project
+- Tox21 is a public benchmark dataset; please follow the dataset’s original terms and citation recommendations when reusing it.
 
-::contentReference[oaicite:4]{index=4}
