@@ -121,8 +121,10 @@ reports/figures/best_model_test_pr_auc.png
 
 ## Repository structure
 
-- ```bash srs/``` - training + evaluation scripts
-- 
+- ```src/``` - training + evaluation scripts
+- ```reports/``` - CSV results + generated figures
+- ```data/``` - optional local cashed data
+- ```notebooks/``` - exploration/ notes (optional)
 
 ## Notes & limitations
 
@@ -132,3 +134,5 @@ reports/figures/best_model_test_pr_auc.png
 ## License/ disclaimer
 
 -This is a learning project; Tox21 is a public benchmark dataset; please follow the dataset’s original terms and citation recommendations when reusing it.
+
+::contentReference[oaicite:4]{index=4}
