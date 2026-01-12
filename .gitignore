@@ -1,5 +1,8 @@
-models/
 __pycache__/
-.ipynb_checkpoints/
 *.pyc
+.ipynb_checkpoints/
+.vscode/
+.idea/
 .DS_Store
+.venv/
+.env/

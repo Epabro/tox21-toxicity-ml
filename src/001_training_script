@@ -1,0 +1,147 @@
+import numpy as np
+import pandas as pd
+
+from tdc.single_pred import Tox
+from rdkit import Chem, DataStructs
+from rdkit.Chem import AllChem
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score, average_precision_score
+from sklearn.model_selection import ParameterGrid
+
+
+def find_smiles_col(df: pd.DataFrame) -> str:
+    for c in ["Drug", "drug", "SMILES", "smiles", "Molecule", "molecule"]:
+        if c in df.columns:
+            return c
+    # fallback: first object column
+    for c in df.columns:
+        if df[c].dtype == object:
+            return c
+    raise ValueError("Could not find SMILES column.")
+
+
+def find_label_col(df: pd.DataFrame) -> str:
+    for c in ["Y", "y", "label", "Label"]:
+        if c in df.columns:
+            return c
+    return df.columns[-1]
+
+
+def smiles_to_morgan(smiles: str, radius=2, n_bits=2048):
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is None:
+        return None
+    fp = AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=n_bits)
+    arr = np.zeros((n_bits,), dtype=np.int8)
+    DataStructs.ConvertToNumpyArray(fp, arr)
+    return arr
+
+
+def make_xy(df: pd.DataFrame, smiles_col: str, y_col: str, n_bits=2048):
+    X_list, y_list = [], []
+    for smi, y in zip(df[smiles_col].astype(str), df[y_col]):
+        if pd.isna(y):
+            continue
+        fp = smiles_to_morgan(smi, n_bits=n_bits)
+        if fp is None:
+            continue
+        X_list.append(fp)
+        y_list.append(int(y))
+    X = np.vstack(X_list)
+    y = np.array(y_list, dtype=np.int64)
+    return X, y
+
+
+def eval_metrics(model, X, y):
+    proba = model.predict_proba(X)[:, 1]
+    return {
+        "roc_auc": roc_auc_score(y, proba),
+        "pr_auc": average_precision_score(y, proba),
+        "pos_rate": float(y.mean()),
+        "n": int(len(y)),
+    }
+
+
+def main():
+    endpoint = "NR-AR"  # change later
+    seed = 42
+
+    data = Tox(name="Tox21", label_name=endpoint)
+    df = data.get_data()
+
+    smiles_col = find_smiles_col(df)
+    y_col = find_label_col(df)
+
+    split = data.get_split(method="scaffold", seed=seed, frac=[0.8, 0.1, 0.1])
+    print("Split keys:", split.keys())
+
+    train_df = split["train"]
+    val_df = split.get("valid", None)
+    if val_df is None:
+        val_df = split.get("val", None)
+
+    test_df = split["test"]
+
+    if val_df is None:
+        raise KeyError(f"No validation split found. Available keys: {list(split.keys())}")
+
+
+    X_train, y_train = make_xy(train_df, smiles_col, y_col)
+    X_val, y_val = make_xy(val_df, smiles_col, y_col)
+    X_test, y_test = make_xy(test_df, smiles_col, y_col)
+
+    print(f"Endpoint: {endpoint}")
+    print(f"Train: n={len(y_train)} pos={y_train.mean():.3f}")
+    print(f"Val:   n={len(y_val)} pos={y_val.mean():.3f}")
+    print(f"Test:  n={len(y_test)} pos={y_test.mean():.3f}")
+
+    # Tiny “tuning” over C (strength of regularization)
+    grid = {"C": [0.1, 1.0, 3.0, 10.0]}
+    best = None
+
+    for params in ParameterGrid(grid):
+        model = LogisticRegression(
+            solver="saga",
+            max_iter=5000,
+            n_jobs=-1,
+            class_weight="balanced",
+            **params,
+        )
+        model.fit(X_train, y_train)
+        m = eval_metrics(model, X_val, y_val)
+        m["C"] = params["C"]
+        if best is None or m["pr_auc"] > best["pr_auc"]:
+            best = m
+            best_model = model
+
+    test_m = eval_metrics(best_model, X_test, y_test)
+
+    print("\nBest on VAL (by PR-AUC):", best)
+    print("TEST:", test_m)
+
+    # Save metrics
+    out = {
+        "endpoint": endpoint,
+        "seed": seed,
+        "best_val": best,
+        "test": test_m,
+    }
+    pd.DataFrame([{
+        "endpoint": endpoint,
+        "val_pr_auc": best["pr_auc"],
+        "val_roc_auc": best["roc_auc"],
+        "test_pr_auc": test_m["pr_auc"],
+        "test_roc_auc": test_m["roc_auc"],
+        "C": best["C"],
+        "train_n": len(y_train),
+        "val_n": len(y_val),
+        "test_n": len(y_test),
+        "test_pos_rate": test_m["pos_rate"],
+    }]).to_csv("reports/baseline_metrics.csv", index=False)
+
+    print("\nSaved: reports/baseline_metrics.csv")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,2 @@
+endpoint,val_pr_auc,val_roc_auc,test_pr_auc,test_roc_auc,C,train_n,val_n,test_n,test_pos_rate
+NR-AR,0.3227461369641718,0.6844348659003832,0.5015556096139185,0.7283652136812914,0.1,5812,726,727,0.05639614855570839

@@ -1,0 +1,19 @@
+{
+  "endpoint": "NR-AR-LBD",
+  "seed": 42,
+  "fit_mode": "none",
+  "best_iteration": null,
+  "best_score": null,
+  "val_pr_auc": 0.2912367687757655,
+  "val_roc_auc": 0.7370704037370704,
+  "test_pr_auc": 0.5288579243713211,
+  "test_roc_auc": 0.8803411771159015,
+  "test_pos_rate": 0.08714918759231906,
+  "scale_pos_weight": 30.988165680473372,
+  "max_depth": 3,
+  "n_estimators": 5000,
+  "learning_rate": 0.05,
+  "subsample": 0.8,
+  "colsample_bytree": 0.8,
+  "reg_lambda": 1.0
+}

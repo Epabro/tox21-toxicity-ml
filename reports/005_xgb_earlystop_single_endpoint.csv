@@ -1,0 +1,2 @@
+endpoint,seed,fit_mode,best_iteration,best_score,val_pr_auc,val_roc_auc,test_pr_auc,test_roc_auc,test_pos_rate,scale_pos_weight,max_depth,n_estimators,learning_rate,subsample,colsample_bytree,reg_lambda
+NR-AR-LBD,42,none,,,0.2912367687757655,0.7370704037370704,0.5288579243713211,0.8803411771159015,0.08714918759231906,30.988165680473372,3,5000,0.05,0.8,0.8,1.0
