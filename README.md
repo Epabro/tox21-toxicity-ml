@@ -27,7 +27,7 @@ This repository demonstrates:
 - Input: **SMILES**
 - Labels: assay outcomes per endpoint
 
-Endpoints:
+Endpoints:  
 `NR-AR`, `NR-AR-LBD`, `NR-AhR`, `NR-Aromatase`, `NR-ER`, `NR-ER-LBD`, `NR-PPAR-gamma`, `SR-ARE`, `SR-ATAD5`, `SR-HSE`, `SR-MMP`, `SR-p53`.
 
 ---
@@ -47,7 +47,7 @@ Endpoints:
 1. **LR**: Logistic Regression (`class_weight="balanced"`) with a small `C` grid.
 2. **XGB-grid**: XGBoost sklearn wrapper with a small hyperparameter grid.
 3. **XGB-ES**: Native `xgboost.train` with **early stopping** (fixed params).
-4. **XGB-ES+Grid**: Native `xgboost.train` + early stopping + small grid over tree complexity regularization.
+4. **XGB-ES+Grid**: Native `xgboost.train` + early stopping + small grid over tree complexity / regularization.
 
 ### Metrics
 - Primary: **PR-AUC** (Average Precision), because many endpoints are imbalanced.
@@ -84,16 +84,21 @@ Endpoints:
 
 ## How to reproduce
 
-### 1) Create environment (example)
-This repo was developed in a Conda/Miniforge environment with Python + RDKit + TDC + scikit-learn + xgboost.
+### 1) Create environment (Conda / Miniforge)
 
-Example (adapt to your setup):
-- Create and activate an environment
-- Install dependencies
-- Run scripts from repo root
+```bash
+# create env
+conda create -n tox21 python=3.11 -y
+conda activate tox21
+
+# install RDKit from conda-forge (recommended)
+conda install -c conda-forge rdkit -y
+
+# install python deps
+pip install -r requirements.txt
+
 
 ### 2) Run training + evaluation scripts
-From repo root:
 
 ```bash
 python -u src/002_train_baseline.py
@@ -101,3 +106,21 @@ python -u src/003_train_xgboost_all_endpoints.py
 python -u src/007_xgb_native_earlystop_all_endpoints.py
 python -u src/009_xgb_native_es_small_grid_all_endpoints.py
 python src/010_compare_four_models.py
+
+## Plots
+- Generate plots:
+```bash
+python src/011_make_plots.py
+- Figures will be saved to:
+reports/figures/lr_vs_best_xgb_test_pr_auc.png
+reports/figures/best_model_test_pr_auc.png
+
+## Notes & limitations
+
+- Results depend on scaffold split seed and featurization settings.
+- Morgan fingerprints + classical ML are strong baselines, but do not capture 3D / conformational effects.
+- Some endpoints remain hard; performance is influenced by class imbalance and label noise.
+## License/ disclaimer
+
+This is a learning + portfolio project.
+Tox21 is a public benchmark dataset; please follow the dataset’s original terms and citation recommendations when reusing it.
