@@ -1,7 +1,6 @@
 # Tox21 Toxicity Prediction (Scaffold Split) — Baselines → XGBoost + Early Stopping
 
-End-to-end ML project to predict **Tox21 toxicity assay endpoints** from **molecular structure (SMILES)** using **RDKit Morgan fingerprints (ECFP-like)**.  
-This repo benchmarks a strong baseline (**Logistic Regression**) against multiple **XGBoost** training strategies, emphasizing **generalization to novel chemical scaffolds** via **scaffold splitting**.
+End-to-end ML project to predict **Tox21 toxicity assay endpoints** from **molecular structure (SMILES)** using **RDKit Morgan fingerprints (ECFP-like)**. This repo benchmarks a strong baseline (**Logistic Regression**) against multiple **XGBoost** training strategies, emphasizing **generalization to novel chemical scaffolds** via **scaffold splitting**.
 
 ---
 
