@@ -96,7 +96,7 @@ conda install -c conda-forge rdkit -y
 
 # install python deps
 pip install -r requirements.txt
-
+```
 
 ### 2) Run training + evaluation scripts
 
