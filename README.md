@@ -117,6 +117,13 @@ python src/011_make_plots.py
 reports/figures/lr_vs_best_xgb_test_pr_auc.png
 reports/figures/best_model_test_pr_auc.png
 ```
+---
+
+## Repository structure
+
+- ```bash srs/``` - training + evaluation scripts
+- 
+
 ## Notes & limitations
 
 - Results depend on scaffold split seed and featurization settings.
