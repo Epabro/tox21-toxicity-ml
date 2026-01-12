@@ -108,14 +108,16 @@ python -u src/009_xgb_native_es_small_grid_all_endpoints.py
 python src/010_compare_four_models.py
 ```
 
-## Plots
+### 3) Plots
 - Generate plots:
 ```bash
 python src/011_make_plots.py
+```
 - Figures will be saved to:
+```bash
 reports/figures/lr_vs_best_xgb_test_pr_auc.png
 reports/figures/best_model_test_pr_auc.png
-
+```
 ## Notes & limitations
 
 - Results depend on scaffold split seed and featurization settings.
